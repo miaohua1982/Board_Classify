@@ -175,27 +175,7 @@ class MainWindow(QTabWidget):
     '''
     def detect_img(self):
         model = self.model
-        output_size = self.output_size
         source = self.img2predict  # file/dir/URL/glob, 0 for webcam
-        imgsz = 640  # inference size (pixels)
-        conf_thres = 0.25  # confidence threshold
-        iou_thres = 0.45  # NMS IOU threshold
-        max_det = 1000  # maximum detections per image
-        device = self.device  # cuda device, i.e. 0 or 0,1,2,3 or cpu
-        view_img = False  # show results
-        save_txt = False  # save results to *.txt
-        save_conf = False  # save confidences in --save-txt labels
-        save_crop = False  # save cropped prediction boxes
-        nosave = False  # do not save images/videos
-        classes = None  # filter by class: --class 0, or --class 0 2 3
-        agnostic_nms = False  # class-agnostic NMS
-        augment = False  # ugmented inference
-        visualize = False  # visualize features
-        line_thickness = 3  # bounding box thickness (pixels)
-        hide_labels = False  # hide labels
-        hide_conf = False  # hide confidences
-        half = False  # use FP16 half-precision inference
-        dnn = False  # use OpenCV DNN for ONNX inference
         print(source)
         if source == "":
             QMessageBox.warning(self, "请上传", "请先上传图片再进行检测")
@@ -204,8 +184,9 @@ class MainWindow(QTabWidget):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             img = alb_valid_transform(image=img)['image']  # [3, h, w]
             print(type(img), img.shape)
-            img = img.unsqueeze(0)                          # [1, 3, h, w]
+            img = img.unsqueeze(0)                         # [1, 3, h, w]
             pred_prob = self.model(img)
+            print('add dim 0', img.shape)
             pred_prob = pred_prob.softmax(dim=1)
             print('The detect prob is', pred_prob)
             pred_prob, pred_label = pred_prob.max(dim=1)
